@@ -48,6 +48,6 @@ class MoviesPresenter implements MoviesContract.UserActionsListener {
 
     @Override
     public void openMovieDetails(@NonNull MovieSearchItem movie) {
-
+        mView.showMovieDetailsUi(movie.getImdbId());
     }
 }

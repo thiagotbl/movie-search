@@ -1,6 +1,7 @@
 package tp.moviesearch.movies;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +27,7 @@ import java.util.List;
 import tp.moviesearch.Injection;
 import tp.moviesearch.R;
 import tp.moviesearch.data.model.MovieSearchItem;
+import tp.moviesearch.details.DetailsActivity;
 
 /**
  * UI for the search screen.
@@ -57,7 +59,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_movies, container, false);
 
-        mAdapter = new MovieAdapter(getContext());
+        mAdapter = new MovieAdapter(getContext(), movie -> mActionsListener.openMovieDetails(movie));
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -133,7 +135,9 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
     @Override
     public void showMovieDetailsUi(@NonNull String imdbId) {
-        
+        Intent intent = new Intent(getContext(), DetailsActivity.class);
+        intent.putExtra(DetailsActivity.EXTRA_IMDB_ID, imdbId);
+        startActivity(intent);
     }
 
     private void hideAllElements() {
@@ -144,7 +148,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     /**
      * RecyclerView ViewHolder
      */
-    static class MovieViewHolder extends RecyclerView.ViewHolder {
+    private static class MovieViewHolder extends RecyclerView.ViewHolder {
         
         ImageView poster;
         TextView title;
@@ -153,6 +157,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
         MovieViewHolder(View view) {
             super(view);
+
             poster = (ImageView) view.findViewById(R.id.img_movie_poster);
             title = (TextView) view.findViewById(R.id.tv_movie_title);
             year = (TextView) view.findViewById(R.id.tv_movie_year);
@@ -165,11 +170,18 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
      */
     private static class MovieAdapter extends RecyclerView.Adapter<MovieViewHolder> {
 
-        private Context mContext;
-        List<MovieSearchItem> mMovies;
+        interface MovieItemListener {
+            void onMovieClicked(MovieSearchItem movie);
+        }
 
-        MovieAdapter(Context context) {
+        private Context mContext;
+        private MovieItemListener mListener;
+
+        private List<MovieSearchItem> mMovies;
+
+        MovieAdapter(Context context, MovieItemListener listener) {
             mContext = context;
+            mListener = listener;
         }
 
         @Override
@@ -192,6 +204,8 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
                     .load(movie.getPoster())
                     .crossFade()
                     .into(holder.poster);
+
+            holder.itemView.setOnClickListener(view -> mListener.onMovieClicked(mMovies.get(position)));
         }
 
         @Override
