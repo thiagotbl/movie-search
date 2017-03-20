@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import rx.Observable;
+import tp.moviesearch.data.model.MovieDetails;
 import tp.moviesearch.data.model.MovieSearchItem;
 import tp.moviesearch.data.remote.OmdbRestService;
 
@@ -26,5 +27,10 @@ public class MovieRepositoryImpl implements MovieRepository {
                 .concatMap(movieSearch -> movieSearch.getMovies() != null ?
                         Observable.from(movieSearch.getMovies()).toList() :
                         Observable.from(Collections.<MovieSearchItem>emptyList()).toList());
+    }
+
+    @Override
+    public Observable<MovieDetails> getMovieDetails(@NonNull String imdbId) {
+        return service.getMovieDetails(imdbId);
     }
 }
