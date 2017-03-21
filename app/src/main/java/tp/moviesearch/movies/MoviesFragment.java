@@ -3,10 +3,12 @@ package tp.moviesearch.movies;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -33,6 +36,8 @@ import tp.moviesearch.details.DetailsActivity;
  * UI for the search screen.
  */
 public class MoviesFragment extends Fragment implements MoviesContract.View {
+
+    private static final String MOVIES_KEY = "movies_key";
     
     private MoviesContract.UserActionsListener mActionsListener;
     private MovieAdapter mAdapter;
@@ -63,6 +68,8 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
         RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL));
         recyclerView.setAdapter(mAdapter);
 
         mProgressBar = rootView.findViewById(R.id.progress_bar);
@@ -76,6 +83,25 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
+
+        // restores the search result state
+        if (savedInstanceState != null && savedInstanceState.getParcelableArray(MOVIES_KEY) != null) {
+            Parcelable[] state = savedInstanceState.getParcelableArray(MOVIES_KEY);
+            assert state != null;
+            List<MovieSearchItem> movies = Arrays.asList((MovieSearchItem[]) state);
+            mAdapter.setMovies(movies);
+            hideEmptyStateElements();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        // saves the search result state
+        if (mAdapter.getItemCount() != 0) {
+            outState.putParcelableArray(MOVIES_KEY, mAdapter.getMovies().toArray(new MovieSearchItem[]{}));
+        }
     }
 
     @Override
@@ -99,7 +125,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
     @Override
     public void showSearchResults(@NonNull List<MovieSearchItem> movies) {
-        hideAllElements();
+        hideEmptyStateElements();
         mAdapter.setMovies(movies);
     }
 
@@ -119,7 +145,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
     @Override
     public void showLoading() {
-        hideAllElements();
+        hideEmptyStateElements();
         mProgressBar.setVisibility(View.VISIBLE);
     }
 
@@ -140,7 +166,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
         startActivity(intent);
     }
 
-    private void hideAllElements() {
+    private void hideEmptyStateElements() {
         mImgEmptyScreen.setVisibility(View.GONE);
         mTextViewEmptyScreen.setVisibility(View.GONE);
     }
@@ -215,6 +241,10 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
             }
             
             return mMovies.size();
+        }
+
+        List<MovieSearchItem> getMovies() {
+            return mMovies;
         }
 
         void setMovies(List<MovieSearchItem> movies) {
