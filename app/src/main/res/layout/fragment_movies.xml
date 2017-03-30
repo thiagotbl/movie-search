@@ -3,7 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/primary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -39,7 +50,7 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:scrollbars="horizontal"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/toolbar"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         tools:listitem="@layout/movie_list_item"

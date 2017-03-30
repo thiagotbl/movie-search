@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -15,10 +15,28 @@
         android:visibility="gone"
         />
 
-    <ScrollView
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/primary"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:layout_scrollFlags="scroll|enterAlways"
+            />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
         <android.support.constraint.ConstraintLayout
@@ -330,7 +348,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/details_director_subtitle"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/accent"
                 android:textStyle="bold"
                 android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -343,7 +361,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/details_actors_subtitle"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/accent"
                 android:textStyle="bold"
                 android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -388,7 +406,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/details_awards_subtitle"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/accent"
                 android:textStyle="bold"
                 android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -414,7 +432,7 @@
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/details_plot_subtitle"
-                android:textColor="@color/colorAccent"
+                android:textColor="@color/accent"
                 android:textStyle="bold"
                 android:visibility="visible"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -422,6 +440,6 @@
 
         </android.support.constraint.ConstraintLayout>
 
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
