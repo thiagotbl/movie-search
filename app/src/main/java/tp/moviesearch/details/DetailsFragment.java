@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +29,8 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
     private static final String ARGUMENT_IMDB_ID = "imdb_id";
 
     private UserActionsListener mActionsListener;
+
+    private ActionBar mActionBar;
 
     private View mProgressBar;
 
@@ -72,6 +77,14 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
                              @Nullable Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.fragment_details, container, false);
 
+        Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
+
+        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        assert mActionBar != null;
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+        mActionBar.setTitle("");
+
         mProgressBar = rootView.findViewById(R.id.progress_bar);
 
         mDetails = rootView.findViewById(R.id.details);
@@ -107,6 +120,8 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
     @Override
     public void showMovieDetails(@NonNull MovieDetails movie) {
         mDetails.setVisibility(View.VISIBLE);
+
+        mActionBar.setTitle(movie.getTitle());
 
         Glide.with(this)
                 .load(movie.getPoster())
