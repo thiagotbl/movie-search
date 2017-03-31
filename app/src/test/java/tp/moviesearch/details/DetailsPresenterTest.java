@@ -84,4 +84,13 @@ public class DetailsPresenterTest {
         verify(mView).hideLoading();
         verify(mView).showError(errorMessage);
     }
+
+    @Test
+    public void testOpenFullMoviePoster() {
+        String poster = "poster.jpg";
+
+        mDetailsPresenter.openFullMoviePoster(poster);
+
+        verify(mView).showFullScreenMoviePoster(poster);
+    }
 }

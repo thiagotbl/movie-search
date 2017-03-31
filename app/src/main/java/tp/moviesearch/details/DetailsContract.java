@@ -17,11 +17,15 @@ class DetailsContract {
 
         void hideLoading();
 
+        void showFullScreenMoviePoster(@NonNull String poster);
+
         void showError(@Nullable String message);
     }
 
     interface UserActionsListener {
 
         void getMovieDetails(@NonNull String imdbId);
+
+        void openFullMoviePoster(@NonNull String poster);
     }
 }
