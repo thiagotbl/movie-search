@@ -128,6 +128,8 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
                 .crossFade()
                 .into(mImgPoster);
 
+        mImgPoster.setOnClickListener(v -> mActionsListener.openFullMoviePoster(movie.getPoster()));
+
         mTvTitle.setText(movie.getTitle());
         mRatingBar.setRating(movie.getImdbRating() / 10 * mRatingBar.getNumStars());
 
@@ -154,6 +156,17 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
     @Override
     public void hideLoading() {
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showFullScreenMoviePoster(@NonNull String poster) {
+        Fragment fullScreenFragment = FullScreenPosterFragment.newInstance(poster);
+
+        getActivity().getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.container, fullScreenFragment)
+                .addToBackStack("full-screen-poster")
+                .commit();
     }
 
     @Override

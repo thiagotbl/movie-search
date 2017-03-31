@@ -36,4 +36,9 @@ class DetailsPresenter implements DetailsContract.UserActionsListener {
                         }
                 );
     }
+
+    @Override
+    public void openFullMoviePoster(@NonNull String poster) {
+        mView.showFullScreenMoviePoster(poster);
+    }
 }
