@@ -8,6 +8,8 @@
     <string name="error_message">
         Something went terribly wrong! Check your network connection and try again.
     </string>
+    <string name="details_rating_description">Movie Rating: %1$s</string>
+    <string name="details_no_rating_description">No rating</string>
     <string name="details_director_subtitle">Director</string>
     <string name="details_actors_subtitle">Actors</string>
     <string name="details_awards_subtitle">Awards</string>
