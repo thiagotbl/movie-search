@@ -48,7 +48,9 @@ public class MoviesPresenterTest {
         when(mMovieRepository.searchMovie(anyString()))
                 .thenReturn(Observable.just(Collections.emptyList()));
 
-        mMoviesPresenter.searchMovie("");
+        mMoviesPresenter.searchMovie("title");
+
+        verify(mMovieRepository).searchMovie("title");
 
         verify(mView).showLoading();
         verify(mView).clearSearchResults();
@@ -64,7 +66,9 @@ public class MoviesPresenterTest {
         when(mMovieRepository.searchMovie(anyString()))
                 .thenReturn(Observable.just(searchResult));
 
-        mMoviesPresenter.searchMovie("");
+        mMoviesPresenter.searchMovie("title");
+
+        verify(mMovieRepository).searchMovie("title");
 
         verify(mView).showLoading();
         verify(mView).clearSearchResults();
@@ -77,7 +81,9 @@ public class MoviesPresenterTest {
         when(mMovieRepository.searchMovie(anyString()))
                 .thenReturn(Observable.error(null));
 
-        mMoviesPresenter.searchMovie("");
+        mMoviesPresenter.searchMovie("title");
+
+        verify(mMovieRepository).searchMovie("title");
 
         verify(mView).showLoading();
         verify(mView).clearSearchResults();

@@ -65,7 +65,9 @@ public class DetailsPresenterTest {
         when(mMovieRepository.getMovieDetails(anyString()))
                 .thenReturn(Observable.just(movieDetails));
 
-        mDetailsPresenter.getMovieDetails("");
+        mDetailsPresenter.getMovieDetails("movie title");
+
+        verify(mMovieRepository).getMovieDetails("movie title");
 
         verify(mView).showLoading();
         verify(mView).hideLoading();
@@ -78,7 +80,9 @@ public class DetailsPresenterTest {
         when(mMovieRepository.getMovieDetails(anyString()))
                 .thenReturn(Observable.error(new RuntimeException(errorMessage)));
 
-        mDetailsPresenter.getMovieDetails("");
+        mDetailsPresenter.getMovieDetails("movie title");
+
+        verify(mMovieRepository).getMovieDetails("movie title");
 
         verify(mView).showLoading();
         verify(mView).hideLoading();

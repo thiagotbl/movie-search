@@ -90,7 +90,7 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
         mDetails = rootView.findViewById(R.id.details);
 
         mImgPoster = (ImageView) rootView.findViewById(R.id.img_poster);
-        mTvTitle = (TextView) rootView.findViewById(R.id.tv_title);
+        mTvTitle = (TextView) rootView.findViewById(R.id.tv_movie_title);
         mRatingBar = (RatingBar) rootView.findViewById(R.id.rating_bar);
 
         mTvReleased = (TextView) rootView.findViewById(R.id.tv_released);
@@ -131,7 +131,10 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
         mImgPoster.setOnClickListener(v -> mActionsListener.openFullMoviePoster(movie.getPoster()));
 
         mTvTitle.setText(movie.getTitle());
+
         mRatingBar.setRating(movie.getImdbRating() / 10 * mRatingBar.getNumStars());
+        mRatingBar.setContentDescription(getString(R.string.details_rating_description,
+                String.valueOf(movie.getImdbRating())));
 
         mTvReleased.setText(movie.getReleaseDate());
         mTvRuntime.setText(movie.getRuntime());

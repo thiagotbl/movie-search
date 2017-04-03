@@ -74,7 +74,7 @@
                 tools:src="@mipmap/ic_launcher_round"/>
 
             <TextView
-                android:id="@+id/tv_title"
+                android:id="@+id/tv_movie_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -109,7 +109,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_title"/>
+                app:layout_constraintTop_toBottomOf="@+id/tv_movie_title"/>
 
             <View
                 android:id="@+id/divider_2"
