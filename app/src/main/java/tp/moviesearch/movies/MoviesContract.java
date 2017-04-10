@@ -33,5 +33,7 @@ class MoviesContract {
         void searchMovie(@NonNull String title);
 
         void openMovieDetails(@NonNull MovieSearchItem movie);
+
+        void clear();
     }
 }

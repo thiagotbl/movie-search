@@ -24,9 +24,9 @@ public class MovieRepositoryImpl implements MovieRepository {
     public Observable<List<MovieSearchItem>> searchMovie(@NonNull String title) {
         String q = title.trim();
         return service.searchMovie(q)
-                .concatMap(movieSearch -> movieSearch.getMovies() != null ?
-                        Observable.from(movieSearch.getMovies()).toList() :
-                        Observable.from(Collections.<MovieSearchItem>emptyList()).toList());
+                .concatMap(movieSearch -> Observable.from(movieSearch.getMovies() != null ?
+                        movieSearch.getMovies() : Collections.emptyList()))
+                .toList();
     }
 
     @Override

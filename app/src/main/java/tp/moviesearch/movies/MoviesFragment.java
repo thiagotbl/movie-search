@@ -85,6 +85,12 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mActionsListener.clear();
+    }
+
+    @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         setHasOptionsMenu(true);
