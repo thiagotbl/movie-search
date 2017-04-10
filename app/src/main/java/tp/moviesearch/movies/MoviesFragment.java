@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -40,9 +41,13 @@ import tp.moviesearch.details.DetailsActivity;
 public class MoviesFragment extends Fragment implements MoviesContract.View {
 
     private static final String MOVIES_KEY = "movies_key";
+    private static final String QUERY_KEY = "query_key";
     
     private MoviesContract.UserActionsListener mActionsListener;
     private MovieAdapter mAdapter;
+
+    private SearchView mSearchView;
+    private String mQueryString;
 
     private View mProgressBar;
     private TextView mTextViewEmptyScreen;
@@ -103,6 +108,11 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
             mAdapter.setMovies(movies);
             hideEmptyStateElements();
         }
+
+        // recovers the query string
+        if (savedInstanceState != null) {
+            mQueryString = savedInstanceState.getString(QUERY_KEY);
+        }
     }
 
     @Override
@@ -113,14 +123,17 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
         if (mAdapter.getItemCount() != 0) {
             outState.putParcelableArray(MOVIES_KEY, mAdapter.getMovies().toArray(new MovieSearchItem[]{}));
         }
+        // saves the search query
+        outState.putString(QUERY_KEY, mSearchView.getQuery().toString());
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_movie_search, menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        MenuItem menuItem = menu.findItem(R.id.menu_search);
+        mSearchView = (SearchView) menuItem.getActionView();
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mActionsListener.searchMovie(query);
@@ -132,6 +145,13 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
                 return false;
             }
         });
+
+        // recovers the search view state
+        if (mQueryString != null && !mQueryString.isEmpty()) {
+            menuItem.expandActionView();
+            mSearchView.setQuery(mQueryString, false);
+            mSearchView.clearFocus();
+        }
     }
 
     @Override
