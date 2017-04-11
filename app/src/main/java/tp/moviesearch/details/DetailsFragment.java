@@ -118,6 +118,12 @@ public class DetailsFragment extends Fragment implements DetailsContract.View {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        mActionsListener.clear();
+    }
+
+    @Override
     public void showMovieDetails(@NonNull MovieDetails movie) {
         mDetails.setVisibility(View.VISIBLE);
 
