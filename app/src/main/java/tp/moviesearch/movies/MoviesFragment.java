@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +35,7 @@ import tp.moviesearch.Injection;
 import tp.moviesearch.R;
 import tp.moviesearch.data.model.MovieSearchItem;
 import tp.moviesearch.details.DetailsActivity;
+import tp.moviesearch.util.EndlessRecyclerViewScrollListener;
 
 /**
  * UI for the search screen.
@@ -42,6 +44,11 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
     private static final String MOVIES_KEY = "movies_key";
     private static final String QUERY_KEY = "query_key";
+
+    private static final String STATE_LAST_SEARCH_KEY = "state_search_key";
+    private static final String STATE_TOTAL_KEY = "state_total_key";
+    private static final String STATE_FETCHED_KEY = "state_fetched_key";
+    private static final String STATE_PER_PAGE_KEY = "state_per_page_key";
     
     private MoviesContract.UserActionsListener mActionsListener;
     private MovieAdapter mAdapter;
@@ -53,16 +60,12 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     private TextView mTextViewEmptyScreen;
     private ImageView mImgEmptyScreen;
 
+    private RecyclerView mRecyclerView;
+
     public MoviesFragment() {}
 
     public static MoviesFragment newInstance() {
         return new MoviesFragment();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mActionsListener = new MoviesPresenter(Injection.provideMovieRepository(), this);
     }
 
     @Nullable
@@ -76,11 +79,12 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
         mAdapter = new MovieAdapter(getContext(), movie -> mActionsListener.openMovieDetails(movie));
 
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
-                DividerItemDecoration.VERTICAL));
-        recyclerView.setAdapter(mAdapter);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addOnScrollListener(getScrollListener(layoutManager));
 
         mProgressBar = rootView.findViewById(R.id.progress_bar);
         mImgEmptyScreen = (ImageView) rootView.findViewById(R.id.img_empty_screen);
@@ -93,6 +97,13 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     public void onPause() {
         super.onPause();
         mActionsListener.clear();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mActionsListener = null;
+        mRecyclerView.removeOnScrollListener(null);
     }
 
     @Override
@@ -113,6 +124,10 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
         if (savedInstanceState != null) {
             mQueryString = savedInstanceState.getString(QUERY_KEY);
         }
+
+        // creates the presenter with the saved state
+        mActionsListener = new MoviesPresenter(Injection.provideMovieRepository(), this,
+                readStateFromBundle(savedInstanceState));
     }
 
     @Override
@@ -123,8 +138,13 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
         if (mAdapter.getItemCount() != 0) {
             outState.putParcelableArray(MOVIES_KEY, mAdapter.getMovies().toArray(new MovieSearchItem[]{}));
         }
+
         // saves the search query
         outState.putString(QUERY_KEY, mSearchView.getQuery().toString());
+
+        // saves the presenter state
+        MoviesContract.State state = mActionsListener.getState();
+        writeStateToBundle(outState, state);
     }
 
     @Override
@@ -158,6 +178,11 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     public void showSearchResults(@NonNull List<MovieSearchItem> movies) {
         hideEmptyStateElements();
         mAdapter.setMovies(movies);
+    }
+
+    @Override
+    public void showMoreSearchResults(@NonNull List<MovieSearchItem> movies) {
+        mAdapter.addMovies(movies);
     }
 
     @Override
@@ -200,6 +225,50 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
     private void hideEmptyStateElements() {
         mImgEmptyScreen.setVisibility(View.GONE);
         mTextViewEmptyScreen.setVisibility(View.GONE);
+    }
+
+    private EndlessRecyclerViewScrollListener getScrollListener(LinearLayoutManager layoutManager) {
+        return new EndlessRecyclerViewScrollListener(layoutManager) {
+            @Override
+            public void onLoadMore() {
+                mActionsListener.getMoreResults();
+            }
+        };
+    }
+
+    private void writeStateToBundle(Bundle bundle, MoviesContract.State state) {
+        bundle.putString(STATE_LAST_SEARCH_KEY, state.getLastSearchTerm());
+        bundle.putInt(STATE_TOTAL_KEY, state.getTotal());
+        bundle.putInt(STATE_FETCHED_KEY, state.getTotalFetched());
+        bundle.putInt(STATE_PER_PAGE_KEY, state.getResultsPerPage());
+    }
+
+    private MoviesContract.State readStateFromBundle(Bundle bundle) {
+        if (bundle == null) {
+            return null;
+        }
+
+        return new MoviesContract.State() {
+            @Override
+            public String getLastSearchTerm() {
+                return bundle.getString(STATE_LAST_SEARCH_KEY);
+            }
+
+            @Override
+            public int getTotal() {
+                return bundle.getInt(STATE_TOTAL_KEY);
+            }
+
+            @Override
+            public int getTotalFetched() {
+                return bundle.getInt(STATE_FETCHED_KEY);
+            }
+
+            @Override
+            public int getResultsPerPage() {
+                return bundle.getInt(STATE_PER_PAGE_KEY);
+            }
+        };
     }
 
     /**
@@ -279,7 +348,12 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
         }
 
         void setMovies(List<MovieSearchItem> movies) {
-            mMovies = movies;
+            mMovies = new ArrayList<>(movies);
+            notifyDataSetChanged();
+        }
+
+        void addMovies(List<MovieSearchItem> movies) {
+            mMovies.addAll(movies);
             notifyDataSetChanged();
         }
     }

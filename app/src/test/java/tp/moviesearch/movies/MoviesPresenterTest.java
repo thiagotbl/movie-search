@@ -12,6 +12,7 @@ import java.util.List;
 
 import rx.Observable;
 import tp.moviesearch.data.MovieRepository;
+import tp.moviesearch.data.model.MovieSearch;
 import tp.moviesearch.data.model.MovieSearchItem;
 import tp.moviesearch.util.SchedulersConfig;
 
@@ -45,12 +46,12 @@ public class MoviesPresenterTest {
 
     @Test
     public void testEmptySearchResult() {
-        when(mMovieRepository.searchMovie(anyString()))
-                .thenReturn(Observable.just(Collections.emptyList()));
+        when(mMovieRepository.search(anyString()))
+                .thenReturn(Observable.just(new MovieSearch(0, Collections.emptyList())));
 
         mMoviesPresenter.searchMovie("title");
 
-        verify(mMovieRepository).searchMovie("title");
+        verify(mMovieRepository).search("title");
 
         verify(mView).showLoading();
         verify(mView).clearSearchResults();
@@ -63,12 +64,12 @@ public class MoviesPresenterTest {
         List<MovieSearchItem> searchResult = new ArrayList<>();
         searchResult.add(new MovieSearchItem("Movie 1", "1999", "id01", "movie", "poster-01.jpg"));
         searchResult.add(new MovieSearchItem("Movie 2", "2000", "id02", "movie", "poster-02.jpg"));
-        when(mMovieRepository.searchMovie(anyString()))
-                .thenReturn(Observable.just(searchResult));
+        when(mMovieRepository.search(anyString()))
+                .thenReturn(Observable.just(new MovieSearch(searchResult.size(), searchResult)));
 
         mMoviesPresenter.searchMovie("title");
 
-        verify(mMovieRepository).searchMovie("title");
+        verify(mMovieRepository).search("title");
 
         verify(mView).showLoading();
         verify(mView).clearSearchResults();
@@ -78,12 +79,12 @@ public class MoviesPresenterTest {
 
     @Test
     public void testSearchError() {
-        when(mMovieRepository.searchMovie(anyString()))
+        when(mMovieRepository.search(anyString()))
                 .thenReturn(Observable.error(null));
 
         mMoviesPresenter.searchMovie("title");
 
-        verify(mMovieRepository).searchMovie("title");
+        verify(mMovieRepository).search("title");
 
         verify(mView).showLoading();
         verify(mView).clearSearchResults();

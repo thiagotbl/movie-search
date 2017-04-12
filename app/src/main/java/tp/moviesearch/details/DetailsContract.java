@@ -27,5 +27,7 @@ class DetailsContract {
         void getMovieDetails(@NonNull String imdbId);
 
         void openFullMoviePoster(@NonNull String poster);
+
+        void clear();
     }
 }
