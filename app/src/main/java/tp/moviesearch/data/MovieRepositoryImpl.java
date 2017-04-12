@@ -2,12 +2,9 @@ package tp.moviesearch.data;
 
 import android.support.annotation.NonNull;
 
-import java.util.Collections;
-import java.util.List;
-
 import rx.Observable;
 import tp.moviesearch.data.model.MovieDetails;
-import tp.moviesearch.data.model.MovieSearchItem;
+import tp.moviesearch.data.model.MovieSearch;
 import tp.moviesearch.data.remote.OmdbRestService;
 
 /**
@@ -21,16 +18,17 @@ public class MovieRepositoryImpl implements MovieRepository {
     }
 
     @Override
-    public Observable<List<MovieSearchItem>> searchMovie(@NonNull String title) {
-        String q = title.trim();
-        return service.searchMovie(q)
-                .concatMap(movieSearch -> Observable.from(movieSearch.getMovies() != null ?
-                        movieSearch.getMovies() : Collections.emptyList()))
-                .toList();
+    public Observable<MovieDetails> getMovieDetails(@NonNull String imdbId) {
+        return service.getMovieDetails(imdbId);
     }
 
     @Override
-    public Observable<MovieDetails> getMovieDetails(@NonNull String imdbId) {
-        return service.getMovieDetails(imdbId);
+    public Observable<MovieSearch> search(@NonNull String title) {
+        return search(title, 1);
+    }
+
+    @Override
+    public Observable<MovieSearch> search(@NonNull String title, int page) {
+        return service.searchMovie(title, page);
     }
 }

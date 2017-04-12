@@ -11,7 +11,7 @@ import tp.moviesearch.data.model.MovieSearch;
 public interface OmdbRestService {
 
     @GET("/")
-    Observable<MovieSearch> searchMovie(@Query("s") String title);
+    Observable<MovieSearch> searchMovie(@Query("s") String title, @Query("page") Integer page);
 
     @GET("/?tomatoes=true")
     Observable<MovieDetails> getMovieDetails(@Query("i") String imdbId);

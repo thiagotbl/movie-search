@@ -15,6 +15,8 @@ class MoviesContract {
 
         void showSearchResults(@NonNull List<MovieSearchItem> movies);
 
+        void showMoreSearchResults(@NonNull List<MovieSearchItem> movies);
+
         void showEmptyResult();
 
         void clearSearchResults();
@@ -32,8 +34,23 @@ class MoviesContract {
 
         void searchMovie(@NonNull String title);
 
+        void getMoreResults();
+
         void openMovieDetails(@NonNull MovieSearchItem movie);
 
+        State getState();
+
         void clear();
+    }
+
+    interface State {
+
+        String getLastSearchTerm();
+
+        int getTotal();
+
+        int getTotalFetched();
+
+        int getResultsPerPage();
     }
 }
